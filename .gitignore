@@ -1,0 +1,38 @@
+# ---------- .NET ----------
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+artifacts/
+
+# ---------- Node / Angular ----------
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log*
+
+# ---------- Uploads ----------
+# Product images are user content, not source.
+src/PPECB.API/wwwroot/uploads/
+
+# ---------- Local configuration & secrets ----------
+# Never commit real signing keys or connection strings.
+appsettings.Production.json
+appsettings.Local.json
+*.env
+.env.local
+
+# ---------- OS / editor ----------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+.idea/
+
+# Installer downloads - not part of the source
+tools/
