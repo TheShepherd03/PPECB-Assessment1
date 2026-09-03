@@ -1,0 +1,82 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.85rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-mark {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.brand-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.nav {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.nav a {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.account {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 4rem;
+}
+
+.app-main-plain {
+  max-width: none;
+  padding: 0;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .account {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+}

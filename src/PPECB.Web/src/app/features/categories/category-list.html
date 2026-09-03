@@ -1,0 +1,74 @@
+<div class="page-header">
+  <h1>Categories</h1>
+  <a class="btn btn-primary" routerLink="/categories/new">Add category</a>
+</div>
+
+<div class="toolbar">
+  <input
+    type="search"
+    placeholder="Search by name or code"
+    [ngModel]="search()"
+    (ngModelChange)="search.set($event)"
+    (keyup.enter)="applySearch()"
+    aria-label="Search categories"
+  />
+  <button type="button" class="btn" (click)="applySearch()">Search</button>
+</div>
+
+@if (error()) {
+  <div class="alert alert-error" role="alert">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <p class="muted">Loading…</p>
+} @else if (page(); as result) {
+  @if (result.items.length === 0) {
+    <div class="empty">
+      <p>No categories yet.</p>
+      <a class="btn btn-primary" routerLink="/categories/new">Add your first category</a>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of result.items; track category.categoryId) {
+            <tr>
+              <td><code>{{ category.categoryCode }}</code></td>
+              <td>{{ category.name }}</td>
+              <td>
+                <span class="badge" [class.badge-muted]="!category.isActive">
+                  {{ category.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ category.createdDate | date: 'yyyy-MM-dd HH:mm' }}</td>
+              <td class="right">
+                <a class="btn btn-small" [routerLink]="['/categories', category.categoryId]">Edit</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <button type="button" class="btn btn-small" (click)="previous()" [disabled]="!result.hasPreviousPage">
+        Previous
+      </button>
+      <span class="muted">
+        Page {{ result.pageNumber }} of {{ result.totalPages }} · {{ result.totalCount }} total
+      </span>
+      <button type="button" class="btn btn-small" (click)="next()" [disabled]="!result.hasNextPage">
+        Next
+      </button>
+    </div>
+  }
+}

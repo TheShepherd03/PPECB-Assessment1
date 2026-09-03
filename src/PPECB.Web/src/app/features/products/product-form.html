@@ -1,0 +1,95 @@
+<div class="page-header">
+  <h1>{{ isEdit ? 'Edit product' : 'Add product' }}</h1>
+  <a class="btn" routerLink="/products">Back to list</a>
+</div>
+
+@if (notice()) {
+  <div class="alert alert-success" role="status">{{ notice() }}</div>
+}
+
+@if (error()) {
+  <div class="alert alert-error" role="alert">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <p class="muted">Loading…</p>
+} @else {
+  <div class="form-grid">
+    <form class="card form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (productCode(); as code) {
+        <div class="readonly-field">
+          <span class="label">Product code</span>
+          <code class="code-badge">{{ code }}</code>
+          <p class="hint">Generated automatically in the format yyyyMM-###.</p>
+        </div>
+      }
+
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+      @if ((submitted() || form.controls.name.touched) && form.controls.name.hasError('required')) {
+        <p class="field-error">Product name is required.</p>
+      }
+      @if (serverErrors()['name']) {
+        <p class="field-error">{{ serverErrors()['name'] }}</p>
+      }
+
+      <label for="description">Description</label>
+      <textarea id="description" rows="3" formControlName="description"></textarea>
+
+      <label for="categoryId">Category</label>
+      <select id="categoryId" formControlName="categoryId">
+        <option [value]="0" disabled>Select a category…</option>
+        @for (category of lookup(); track category.categoryId) {
+          <option [value]="category.categoryId">{{ category.name }} ({{ category.categoryCode }})</option>
+        }
+      </select>
+      @if ((submitted() || form.controls.categoryId.touched) && form.controls.categoryId.hasError('min')) {
+        <p class="field-error">Please select a category.</p>
+      }
+      @if (serverErrors()['categoryId']) {
+        <p class="field-error">{{ serverErrors()['categoryId'] }}</p>
+      }
+      @if (lookup().length === 0) {
+        <p class="field-error">
+          You have no active categories yet. <a routerLink="/categories/new">Add one first.</a>
+        </p>
+      }
+
+      <label for="price">Price</label>
+      <input id="price" type="number" step="0.01" min="0" formControlName="price" />
+      @if ((submitted() || form.controls.price.touched) && form.controls.price.hasError('min')) {
+        <p class="field-error">Price must be zero or greater.</p>
+      }
+      @if (serverErrors()['price']) {
+        <p class="field-error">{{ serverErrors()['price'] }}</p>
+      }
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+          {{ submitting() ? 'Saving…' : 'Save' }}
+        </button>
+        <a class="btn" routerLink="/products">Cancel</a>
+      </div>
+    </form>
+
+    <div class="card form-card">
+      <h2>Image</h2>
+
+      @if (isEdit) {
+        @if (imageUrl(); as src) {
+          <img class="preview" [src]="src" alt="Product image" />
+        } @else {
+          <div class="preview preview-empty">No image uploaded</div>
+        }
+
+        <label class="btn file-btn">
+          {{ uploading() ? 'Uploading…' : 'Choose image' }}
+          <input type="file" accept="image/*" (change)="onImageSelected($event)" [disabled]="uploading()" hidden />
+        </label>
+        <p class="hint">JPG, PNG, GIF or WEBP, up to 5 MB.</p>
+      } @else {
+        <p class="muted">Save the product first, then you can upload an image.</p>
+      }
+    </div>
+  </div>
+}

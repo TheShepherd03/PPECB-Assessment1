@@ -1,0 +1,48 @@
+<div class="page-header">
+  <h1>{{ isEdit ? 'Edit category' : 'Add category' }}</h1>
+  <a class="btn" routerLink="/categories">Back to list</a>
+</div>
+
+@if (error()) {
+  <div class="alert alert-error" role="alert">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <p class="muted">Loading…</p>
+} @else {
+  <form class="card form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label for="name">Name</label>
+    <input id="name" type="text" formControlName="name" />
+    @if ((submitted() || form.controls.name.touched) && form.controls.name.hasError('required')) {
+      <p class="field-error">Category name is required.</p>
+    }
+    @if (serverErrors()['name']) {
+      <p class="field-error">{{ serverErrors()['name'] }}</p>
+    }
+
+    <label for="categoryCode">Category code</label>
+    <input id="categoryCode" type="text" formControlName="categoryCode" placeholder="ABC123" maxlength="6" />
+    <p class="hint">Three letters followed by three numbers, for example ABC123.</p>
+    @if ((submitted() || form.controls.categoryCode.touched) && form.controls.categoryCode.hasError('required')) {
+      <p class="field-error">Category code is required.</p>
+    }
+    @if ((submitted() || form.controls.categoryCode.touched) && form.controls.categoryCode.hasError('pattern')) {
+      <p class="field-error">Category code must be 3 letters followed by 3 numbers, for example ABC123.</p>
+    }
+    @if (serverErrors()['categoryCode']) {
+      <p class="field-error">{{ serverErrors()['categoryCode'] }}</p>
+    }
+
+    <label class="checkbox">
+      <input type="checkbox" formControlName="isActive" />
+      <span>Active</span>
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+        {{ submitting() ? 'Saving…' : 'Save' }}
+      </button>
+      <a class="btn" routerLink="/categories">Cancel</a>
+    </div>
+  </form>
+}

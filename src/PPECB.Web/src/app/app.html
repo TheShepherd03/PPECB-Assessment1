@@ -1,0 +1,22 @@
+@if (auth.isLoggedIn()) {
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark">PPECB</span>
+      <span class="brand-sub">Product Catalogue</span>
+    </div>
+
+    <nav class="nav">
+      <a routerLink="/products" routerLinkActive="active">Products</a>
+      <a routerLink="/categories" routerLinkActive="active">Categories</a>
+    </nav>
+
+    <div class="account">
+      <span class="muted">{{ auth.email() }}</span>
+      <button type="button" class="btn btn-small" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+}
+
+<main class="app-main" [class.app-main-plain]="!auth.isLoggedIn()">
+  <router-outlet />
+</main>

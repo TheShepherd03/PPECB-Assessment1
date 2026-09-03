@@ -1,0 +1,126 @@
+<div class="page-header">
+  <h1>Products</h1>
+  <a class="btn btn-primary" routerLink="/products/new">Add product</a>
+</div>
+
+<div class="toolbar">
+  <input
+    type="search"
+    placeholder="Search by name or code"
+    [ngModel]="search()"
+    (ngModelChange)="search.set($event)"
+    (keyup.enter)="applyFilters()"
+    aria-label="Search products"
+  />
+
+  <select
+    aria-label="Filter by category"
+    [value]="categoryFilter() ?? ''"
+    (change)="onCategoryFilterChange($any($event.target).value)"
+  >
+    <option value="">All categories</option>
+    @for (category of lookup(); track category.categoryId) {
+      <option [value]="category.categoryId">{{ category.name }} ({{ category.categoryCode }})</option>
+    }
+  </select>
+
+  <button type="button" class="btn" (click)="applyFilters()">Search</button>
+
+  <span class="spacer"></span>
+
+  <button type="button" class="btn" (click)="exportExcel()" [disabled]="busy()">Export Excel</button>
+  <button type="button" class="btn" (click)="downloadTemplate()" [disabled]="busy()">Import template</button>
+
+  <label class="btn file-btn">
+    Upload Excel
+    <input type="file" accept=".xlsx" (change)="onImportFileSelected($event)" [disabled]="busy()" hidden />
+  </label>
+</div>
+
+@if (notice()) {
+  <div class="alert alert-success" role="status">{{ notice() }}</div>
+}
+
+@if (error()) {
+  <div class="alert alert-error" role="alert">{{ error() }}</div>
+}
+
+@if (importResult(); as result) {
+  @if (result.errors.length) {
+    <div class="alert alert-error">
+      <strong>The spreadsheet was not imported.</strong>
+      <p class="muted">{{ result.rowsRead }} row(s) read. Fix the problems below and upload again.</p>
+      <ul>
+        @for (problem of result.errors; track $index) {
+          <li>
+            @if (problem.rowNumber > 0) { Row {{ problem.rowNumber }}: }
+            {{ problem.message }}
+          </li>
+        }
+      </ul>
+    </div>
+  }
+}
+
+@if (loading()) {
+  <p class="muted">Loading…</p>
+} @else if (page(); as result) {
+  @if (result.items.length === 0) {
+    <div class="empty">
+      <p>No products found.</p>
+      <a class="btn btn-primary" routerLink="/products/new">Add your first product</a>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th class="right">Price</th>
+            <th>Created</th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of result.items; track product.productId) {
+            <tr>
+              <td>
+                @if (imageUrl(product); as src) {
+                  <img class="thumb" [src]="src" [alt]="product.name" />
+                } @else {
+                  <span class="thumb thumb-empty" aria-hidden="true"></span>
+                }
+              </td>
+              <td><code>{{ product.productCode }}</code></td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.categoryName }}</td>
+              <td class="right">{{ product.price | currency: 'ZAR' : 'symbol-narrow' }}</td>
+              <td>{{ product.createdDate | date: 'yyyy-MM-dd HH:mm' }}</td>
+              <td class="right nowrap">
+                <a class="btn btn-small" [routerLink]="['/products', product.productId]">Edit</a>
+                <button type="button" class="btn btn-small btn-danger" (click)="remove(product)" [disabled]="busy()">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <button type="button" class="btn btn-small" (click)="previous()" [disabled]="!result.hasPreviousPage">
+        Previous
+      </button>
+      <span class="muted">
+        Page {{ result.pageNumber }} of {{ result.totalPages }} · {{ result.totalCount }} total
+      </span>
+      <button type="button" class="btn btn-small" (click)="next()" [disabled]="!result.hasNextPage">
+        Next
+      </button>
+    </div>
+  }
+}
